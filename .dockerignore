@@ -1,0 +1,9 @@
+backend/.venv
+backend/saathi.db
+backend/**/__pycache__
+frontend/node_modules
+frontend/dist
+.git
+.env
+*.md
+.DS_Store

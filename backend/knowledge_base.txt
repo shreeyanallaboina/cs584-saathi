@@ -1,0 +1,81 @@
+# Saathi curated SRH knowledge base
+# Sources: WHO, CDC, NICHD, Guttmacher Institute, ACOG, Office on Women's Health (US)
+# Topics: contraception, abortion, menstrual health — plain English for LMIC/Pakistan context.
+# Last updated: March 2026
+
+## contraception
+
+Contraception means using a method to prevent pregnancy. There are many safe options and a Lady Health Worker or clinic can help you choose the one that fits your health, family size, and daily life.
+
+BARRIER METHODS: Condoms (male) are the only method that also reduce the risk of sexually transmitted infections (STIs) including HIV. They must be used correctly every time. Female condoms also protect against STIs. Condoms are available without a prescription.
+
+DAILY PILLS (Combined Oral Contraceptives): Birth control pills contain hormones that prevent ovulation. They must be taken every day at roughly the same time. Missing pills reduces their effectiveness. Common side effects include mild nausea, breast tenderness, or spotting between periods — these often improve after the first few months. Pills do not protect against STIs.
+
+PROGESTIN-ONLY PILLS (Mini-pill): These are taken daily and are a good option for women who are breastfeeding or cannot take estrogen. They must be taken at the same time each day — being more than 3 hours late reduces their protection.
+
+INJECTABLES: A hormonal injection given by a health worker every 2 to 3 months (depending on the type). Once the injections are stopped, it may take several months for fertility to return to normal.
+
+IMPLANTS: A small rod inserted under the skin of the upper arm by a trained provider. It releases hormones slowly and can prevent pregnancy for 3 to 5 years. It is one of the most effective reversible methods. Fertility returns quickly after removal.
+
+IUD (Intrauterine Device): A small device placed inside the uterus by a trained provider. The copper IUD works for up to 10-12 years and contains no hormones. The hormonal IUD works for 3-7 years. Both are highly effective. An IUD can be removed at any time if you want to become pregnant.
+
+EMERGENCY CONTRACEPTION (EC): Emergency contraception can reduce the chance of pregnancy after unprotected sex. It is not for regular use. There are two main types:
+- Emergency contraceptive pills (ECPs): Must be taken as soon as possible. Levonorgestrel pills work within 72 hours (3 days); the sooner the better. They work by delaying or preventing ovulation — they do not end an existing pregnancy. Side effects may include nausea, headache, or irregular bleeding, but these are mild and temporary.
+- Copper IUD: Can be inserted by a provider within 5 days of unprotected sex and is more than 99% effective — it is the most effective form of emergency contraception. It can then continue to provide long-term contraception for up to 10-12 years.
+Emergency contraception does not protect against STIs and is not an abortion. If you are already pregnant, EC pills will not harm the pregnancy.
+
+LONG-ACTING REVERSIBLE CONTRACEPTION (LARC): Implants and IUDs are the most effective reversible methods available. They do not require daily action and fertility returns after removal. WHO recommends them as first-line options for women who want to space or limit pregnancies.
+
+STERILIZATION: Tubal ligation (for women) and vasectomy (for men) are permanent methods. They should only be chosen when a person is certain they do not want future pregnancies.
+
+CHOOSING A METHOD: The best contraceptive is the one you will use correctly and consistently. Factors to consider include: how often you have sex, whether you are breastfeeding, your health history, and whether you want future pregnancies. A Lady Health Worker or trained provider can guide you without judgment. No method except condoms protects against STIs.
+
+IMPORTANT WARNINGS: Seek care immediately if you experience severe chest pain, severe headache, vision changes, severe leg pain, or difficulty breathing while using hormonal contraception — these are rare but serious warning signs.
+
+## abortion
+
+Abortion means ending a pregnancy. In Pakistan, abortion is legally restricted but is permitted to preserve the life or health of the pregnant woman, or to preserve necessary treatment. A qualified clinician can tell you what is legal and available where you live.
+
+WHAT TO KNOW IF YOU ARE PREGNANT AND CONSIDERING OPTIONS: If you are pregnant and unsure what to do, time matters. The options available to you — and their safety — depend on how far along the pregnancy is. Speak with a licensed health worker, doctor, or clinic as soon as possible. Do not try to end a pregnancy yourself using unknown methods, herbal preparations, or tablets obtained without medical guidance — unsafe abortion is a leading cause of maternal death.
+
+SAFE METHODS (where legally available and provided by trained staff): According to WHO, when abortion is carried out by a trained provider using a recommended method, it is a safe medical procedure. Methods include:
+- Medical abortion (pills): A combination of mifepristone and misoprostol, or misoprostol alone, can be used in early pregnancy. WHO guidelines state this can be safely managed with proper information and follow-up.
+- Surgical methods: Manual vacuum aspiration (MVA) is a safe, simple procedure used in early pregnancy by trained providers.
+
+POSTABORTION CARE: If you have had an abortion or a miscarriage and experience any of the following, go to a health facility immediately: heavy bleeding (soaking more than one pad per hour), severe abdominal pain, high fever, foul-smelling discharge, or feeling faint. These are signs of a complication that needs urgent treatment.
+
+CONTEXT IN PAKISTAN: Research published in BMJ Global Health (2025) found that approximately 3.8 million abortions occur in Pakistan each year, reflecting the high burden of unintended pregnancy. More than 60% of postabortion care in Pakistan is now delivered in public-sector facilities. Misoprostol is increasingly used to treat complications of abortion and miscarriage in both public and private facilities.
+
+EMOTIONAL SUPPORT: Deciding about a pregnancy can be emotionally difficult. You deserve to make this decision with accurate information and without pressure. Speaking to a trusted health worker, counsellor, or doctor is important.
+
+WHAT THIS APP CANNOT DO: Saathi cannot tell you what is legal in your specific location, prescribe medication, or replace care from a licensed provider. If you are in an emergency — heavy bleeding, severe pain, or high fever after a pregnancy loss — go to the nearest health facility or emergency room immediately.
+
+## menstrual_health
+
+Menstruation is the monthly shedding of the uterine lining. It is a normal, healthy part of life for women from puberty until menopause.
+
+NORMAL CYCLE: According to NICHD and WHO, a normal menstrual cycle ranges from 21 to 35 days, counted from the first day of one period to the first day of the next. Bleeding usually lasts 2 to 7 days. Flow can vary — some women have lighter flow, others heavier. Some cycle-to-cycle variation of a few days is normal.
+
+IRREGULAR PERIODS: Between 14% and 25% of women have irregular menstrual cycles at some point. Irregular periods include: cycles shorter than 21 days or longer than 35 days, missing 3 or more periods in a row, or flow that is much heavier or lighter than usual. Common causes include stress, significant weight change, illness, breastfeeding, hormonal changes (such as PCOS — polycystic ovary syndrome), and thyroid problems. Irregular periods are also common in teenagers in the first 1 to 2 years after their first period and in women approaching menopause. If your periods become irregular and you are not sure why, speak with a health worker or doctor.
+
+PAINFUL PERIODS (DYSMENORRHEA): Menstrual cramps are very common — more than half of women experience some pain around their period. Pain is caused by the uterus contracting to shed its lining. Mild to moderate cramps are normal. To relieve pain: apply gentle warmth (a warm cloth or hot water bottle) to your lower abdomen, rest, and take an over-the-counter pain reliever such as ibuprofen or paracetamol as directed on the package. Ibuprofen works especially well for period pain because it reduces the chemicals (prostaglandins) that cause cramping. Always confirm with a provider before taking any medicine if you have other health conditions or are pregnant.
+
+PRIMARY vs SECONDARY DYSMENORRHEA: Primary dysmenorrhea (most common) usually starts within 1-2 years of first menstruation and often improves with age. Secondary dysmenorrhea is pain caused by an underlying condition such as endometriosis, fibroids, or pelvic inflammatory disease (PID) — this pain often worsens over time and needs medical evaluation.
+
+WHEN TO SEEK MEDICAL CARE: See a health worker or doctor if you experience any of the following:
+- Soaking a pad or cloth every hour for 2 or more consecutive hours (very heavy bleeding)
+- Passing blood clots larger than a small coin
+- Bleeding that lasts longer than 7 days
+- Severe cramps that do not improve with pain relief and prevent you from doing daily activities
+- Bleeding or spotting between periods
+- Missing 3 or more periods in a row and you are not pregnant
+- Sudden severe pain not related to your cycle
+- Fever with pelvic pain (possible sign of infection)
+
+PREMENSTRUAL SYMPTOMS (PMS): Many women experience bloating, breast tenderness, mood changes, or tiredness in the days before their period. These are caused by normal hormonal shifts and usually resolve once bleeding begins. Regular light exercise and reducing salt and caffeine intake may help.
+
+TRACKING YOUR CYCLE: Keeping a simple record of when your period starts and ends — and noting any unusual symptoms — is very helpful. It helps you understand your own normal pattern and gives your health provider useful information if you seek care.
+
+HYGIENE: Use clean materials to absorb menstrual flow — cloth pads, disposable pads, or other locally available options. Change or wash these regularly (every 4-8 hours) to prevent infection. Wash your hands before and after. You do not need to restrict your normal activities during your period.
+
+ANAEMIA: Heavy periods over time can lead to iron-deficiency anaemia (low blood count), which causes tiredness, weakness, and dizziness. If you feel very tired or dizzy regularly and bleed heavily, speak with a health worker about getting a blood test and possible iron supplements.

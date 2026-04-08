@@ -1,102 +1,255 @@
-# Saathi — prototype web portal
+# Saathi — Reproductive Health Companion
 
-Mobile-first web app for private reproductive health information (contraception, menstrual health, general abortion-related education) with:
+Saathi (`ساتھی` — "companion" in Urdu) is a private, bilingual (Urdu/English) web app giving women in rural Pakistan a safe, stigma-free space to ask sexual and reproductive health questions. An AI chatbot answers questions grounded in a curated knowledge base; when confidence falls below 75%, the question is redirected to an anonymous community forum mediated by Lady Health Workers (LHWs).
 
-- **Returning users:** username and password.
-- **New users:** referral code from a Lady Health Worker (LHW), then account creation.
-- **LHW portal:** separate flow to log in and generate single-use referral codes.
-- **Chatbot:** answers only when library-match **confidence ≥ 75%**; otherwise offers to post the same question to the **anonymous forum** (prefilled).
-- **Forum:** posts and replies show only **auto-generated anonymous handles** (not login usernames). Topics are limited to `contraception`, `abortion`, and `menstrual_health`.
-- **Branding:** pink `#F88389`, green `#005030`, otter FAB (bottom-right) opens the chatbot; logo in header.
+**Live URL:** https://saathi-app-1046034871301.us-central1.run.app
 
-## Stack (aligned with your SOW)
+---
 
-- **Frontend:** React (Vite + TypeScript).
-- **Backend:** Flask, SQLAlchemy, SQLite (`saathi.db` beside `app.py`).
-- **Chat:** curated `knowledge_base.txt` is injected into the model’s system prompt. With **`GEMINI_API_KEY`** (or **`GOOGLE_API_KEY`**) set, **`/api/chat`** uses **Google Gemini** (default model `gemini-2.0-flash`), returns **JSON-grounded** answers, and the server **only accepts answers when confidence ≥ 0.75** (SOW). Without an API key, the same endpoint **falls back** to the built-in overlap heuristic (for local dev).
+## Architecture
 
-## API keys (Google Gemini for SOW / production)
+```
+┌──────────────────────────────────────────────────────────────────┐
+│                        CLIENT (Browser)                          │
+│                React + Vite + TypeScript SPA                     │
+│                                                                  │
+│   Landing · Home · Chatbot · Forum · LHW Portal                 │
+│   AppShell · ProtectedRoute · AuthContext (localStorage)        │
+└───────────────────────┬──────────────────────────────────────────┘
+                        │ HTTPS  /api/*  (relative — same origin)
+                        ▼
+┌──────────────────────────────────────────────────────────────────┐
+│               Flask Backend  (Google Cloud Run)                  │
+│                         app.py                                   │
+│                                                                  │
+│  /api/auth/register    /api/auth/login                          │
+│  /api/lhw/login        /api/lhw/referral-codes                 │
+│  /api/forum/posts      /api/forum/posts/:id/replies            │
+│  /api/chat             /api/health                              │
+│                                                                  │
+│  ┌──────────────────┐       ┌──────────────────────────────┐   │
+│  │  chat_service.py │──────▶│       llm_chat.py            │   │
+│  │  Orchestration + │       │  google-genai SDK            │   │
+│  │  smalltalk filter│       │  Gemini 2.0-flash-lite       │   │
+│  └────────┬─────────┘       │  KB injected → system prompt │   │
+│           │ on error        │  Returns JSON: confidence,   │   │
+│           ▼                 │  can_answer, answer,         │   │
+│  ┌──────────────────┐       │  matched_topic               │   │
+│  │  chat_logic.py   │       └──────────────────────────────┘   │
+│  │  Heuristic token │                    ▲                      │
+│  │  overlap fallback│       ┌────────────┴─────────────────┐   │
+│  └──────────────────┘       │     knowledge_base.txt       │   │
+│                             │  WHO/CDC/NICHD sourced SRH   │   │
+│                             │  contraception · abortion    │   │
+│                             │  menstrual_health            │   │
+│                             └──────────────────────────────┘   │
+│                                                                  │
+│  ┌──────────────────────────────────────────────────────────┐  │
+│  │                    SQLite / Cloud SQL                     │  │
+│  │  users · lhw_users · referral_codes                      │  │
+│  │  forum_posts · forum_replies                             │  │
+│  └──────────────────────────────────────────────────────────┘  │
+│                                                                  │
+│  GCP Secret Manager ──▶ GEMINI_API_KEY (injected at runtime)   │
+└──────────────────────────────────────────────────────────────────┘
+```
 
-1. Create a key in [Google AI Studio](https://aistudio.google.com/apikey) (or Google Cloud Vertex if you use that billing path).
-2. **Local:** `export GEMINI_API_KEY=...` then run `python app.py`. (`GOOGLE_API_KEY` also works.)
-3. **Cloud Run:** store the key in **Secret Manager**, then attach it to the service, for example:
-   ```bash
-   # Create secret (once): echo -n 'YOUR_KEY' | gcloud secrets create gemini-api-key --data-file=-
-   gcloud run deploy saathi-app \
-     --source . \
-     --region us-central1 \
-     --project saathi-489500 \
-     --allow-unauthenticated \
-     --set-secrets "GEMINI_API_KEY=gemini-api-key:latest"
-   ```
-   (Adjust secret name/version to match your project.)
+### Chat request flow
+1. `POST /api/chat` → `chat_service.run_chat()`
+2. Greeting/smalltalk? → return immediately, no LLM call
+3. `GEMINI_API_KEY` set → `llm_chat.complete_llm()` loads KB, injects into system prompt
+4. Gemini returns `{ confidence, can_answer, answer, matched_topic }`
+5. Server enforces threshold: `confidence >= 0.75 AND answer != null`
+6. Pass → answer + disclaimer returned to frontend
+7. Fail → `suggest_forum: true`, `forum_prefill` = original message
+8. Any exception → silent fallback to heuristic scorer
 
-**Optional:** `GEMINI_MODEL` (default `gemini-2.0-flash`) to switch models (e.g. `gemini-1.5-flash`).
+---
 
-**Expand grounding:** edit `backend/knowledge_base.txt` — the model is only allowed to use what you put there, so richer vetted text improves answers while staying in scope.
+## Prerequisites
 
-## Quick start
+- Python 3.10+
+- Node.js 18+
+- A Gemini API key from [Google AI Studio](https://aistudio.google.com/apikey) (free)
 
-**1. Backend**
+---
+
+## Local Setup
+
+### 1. Clone
+
+```bash
+git clone https://github.com/shreeyanallaboina/cs584-saathi.git
+cd cs584-saathi
+```
+
+### 2. Backend
 
 ```bash
 cd backend
-python3 -m venv .venv
-source .venv/bin/activate   # Windows: .venv\Scripts\activate
+python3 -m venv venv
+source venv/bin/activate        # Windows: venv\Scripts\activate
 pip install -r requirements.txt
-python app.py
 ```
 
-API listens on `http://127.0.0.1:5000`. First run seeds:
+### 3. Environment variables
 
-- LHW login: **`lhw_demo`** / **`lhw_demo_pass`**
-- One unused referral code: **`DEMO1234`**
+```bash
+export GEMINI_API_KEY="your-key-here"   # from aistudio.google.com
+export SECRET_KEY="any-random-string"   # optional locally
+```
 
-**2. Frontend**
+> Without `GEMINI_API_KEY` the chatbot uses the heuristic keyword fallback — the app still runs fully, answers will just be less natural.
+
+### 4. Start backend
+
+```bash
+python app.py
+# Starts on http://127.0.0.1:5050
+# macOS note: port 5000 is taken by AirPlay — app defaults to 5050
+```
+
+On first run, the DB seeds automatically:
+- LHW account: `lhw_demo` / `lhw_demo_pass`
+- Unused referral code: `DEMO1234`
+
+### 5. Start frontend (new terminal)
 
 ```bash
 cd frontend
 npm install
 npm run dev
+# Vite starts on http://localhost:5173
+# /api/* proxied to http://127.0.0.1:5050
 ```
 
-Open the printed local URL (usually `http://localhost:5173`). The Vite dev server proxies `/api` to the Flask app.
+Open http://localhost:5173.
 
-## Docker & Google Cloud Run
+---
 
-The repo root `Dockerfile` builds the frontend, copies `dist` into `backend/static/dist`, and runs **Gunicorn** on **`PORT`** (Cloud Run sets this, usually `8080`). One container serves both the SPA and `/api/*`, so your public URL (for example [your Cloud Run service](https://saathi-app-1046034871301.us-central1.run.app)) needs **no separate API host** and the frontend keeps using relative `/api/...` calls.
+## Environment Variables
 
-**Build and run locally**
+| Variable | Required | Default | Description |
+|----------|----------|---------|-------------|
+| `GEMINI_API_KEY` | Recommended | — | Google AI Studio key. Falls back to heuristic if unset. |
+| `GOOGLE_API_KEY` | Alternative | — | Alias — either name works. |
+| `GEMINI_MODEL` | No | `gemini-2.0-flash-lite` | Override model name. |
+| `SECRET_KEY` | Yes (prod) | `dev-change-in-production` | Flask session secret. |
+| `DATABASE_URL` | No | SQLite | Cloud SQL PostgreSQL URL for persistent data. |
+| `PORT` | No | `5050` | Flask listen port. Cloud Run sets this to `8080`. |
+
+---
+
+## Test Credentials
+
+### New user registration
+| Field | Value |
+|-------|-------|
+| Referral code | `DEMO1234` (single-use — generate a new one via LHW portal if already used) |
+| Username | any (e.g. `testuser`) |
+| Password | any (e.g. `password123`) |
+
+### Returning user
+Log in with whatever username/password you registered with above.
+
+### LHW Portal (`/lhw`)
+| Field | Value |
+|-------|-------|
+| Username | `lhw_demo` |
+| Password | `lhw_demo_pass` |
+
+---
+
+## Project Structure
+
+```
+cs584-saathi/
+├── Dockerfile                  # Multi-stage: Vite build → Gunicorn serve
+├── .dockerignore
+├── backend/
+│   ├── app.py                  # Flask app + all REST endpoints
+│   ├── chat_service.py         # Orchestration + greeting pre-filter
+│   ├── chat_logic.py           # Heuristic token-overlap scorer (fallback)
+│   ├── llm_chat.py             # Gemini integration (google-genai SDK)
+│   ├── knowledge_base.txt      # Curated SRH KB — WHO/CDC/NICHD sourced
+│   ├── requirements.txt
+│   └── static/dist/            # Built frontend (Dockerfile populates this)
+└── frontend/
+    ├── src/
+    │   ├── pages/
+    │   │   ├── Landing.tsx     # Login + register with referral code
+    │   │   ├── Home.tsx
+    │   │   ├── ChatbotPage.tsx
+    │   │   ├── ForumPage.tsx
+    │   │   ├── ForumNew.tsx
+    │   │   └── LHWPortal.tsx
+    │   ├── components/
+    │   │   ├── AppShell.tsx    # Header + bottom nav + otter FAB
+    │   │   └── ProtectedRoute.tsx
+    │   ├── api.ts              # All fetch wrappers
+    │   ├── auth.tsx            # AuthContext + localStorage
+    │   └── App.tsx             # React Router routes
+    ├── public/
+    │   ├── logo.png
+    │   └── otter.png
+    └── vite.config.ts          # Proxies /api → Flask
+```
+
+---
+
+## Docker (local)
 
 ```bash
-cd /path/to/Final
 docker build -t saathi .
-docker run --rm -p 8080:8080 -e PORT=8080 saathi
+docker run --rm -p 8080:8080 \
+  -e PORT=8080 \
+  -e GEMINI_API_KEY="your-key-here" \
+  saathi
+# Open http://localhost:8080
 ```
 
-Open `http://localhost:8080`. Health check: `GET /api/health`.
+---
 
-**Deploy to Cloud Run** (replace `PROJECT_ID` and adjust the service name if yours differs)
+## Deploy to Cloud Run
 
 ```bash
-gcloud config set project PROJECT_ID
-gcloud builds submit --tag gcr.io/PROJECT_ID/saathi
+# Store key in Secret Manager (once)
+echo -n "your-gemini-key" | gcloud secrets create gemini-api-key --data-file=-
+
+# Grant access
+PROJECT_NUMBER=$(gcloud projects describe saathi-489500 --format='value(projectNumber)')
+gcloud secrets add-iam-policy-binding gemini-api-key \
+  --member="serviceAccount:${PROJECT_NUMBER}-compute@developer.gserviceaccount.com" \
+  --role="roles/secretmanager.secretAccessor"
+
+# Deploy
 gcloud run deploy saathi-app \
-  --image gcr.io/PROJECT_ID/saathi \
+  --source . \
   --region us-central1 \
   --allow-unauthenticated \
-  --set-env-vars "SECRET_KEY=$(openssl rand -hex 32)"
+  --platform managed \
+  --project saathi-489500 \
+  --set-secrets "GEMINI_API_KEY=gemini-api-key:latest"
 ```
 
-After deploy, Cloud Run shows the service URL (e.g. `https://saathi-app-1046034871301.us-central1.run.app`). No `VITE_*` API URL is required because the UI talks to the same origin.
+To verify Gemini is active after deploy:
+```bash
+curl -s -X POST https://saathi-app-1046034871301.us-central1.run.app/api/chat \
+  -H 'Content-Type: application/json' \
+  -d '{"message":"is a 27-day cycle normal?"}' | python3 -m json.tool
+# Look for "source": "llm" in the response
+```
 
-**SQLite on Cloud Run:** The app defaults to `sqlite:////tmp/saathi.db` when `K_SERVICE` is set (Cloud Run injects this). Data is **ephemeral** (lost when instances recycle). For a real pilot, point `DATABASE_URL` at **Cloud SQL (PostgreSQL)** as in your SOW.
+---
 
-## Assets
+## Known Limitations
 
-Logo and otter images live under `frontend/public/` as `logo.png` and `otter.png`.
+1. **PIN lock and icon picker not implemented.** Feature 1 of the SOW (discreet app security) is partially complete. The anonymous handle assignment works, but the per-session PIN prompt and neutral icon picker are not built. The app is currently identifiable as Saathi to anyone who opens it.
 
-## Production notes
+2. **SQLite is ephemeral on Cloud Run.** Data is lost when instances recycle. Set `DATABASE_URL` to a Cloud SQL PostgreSQL connection string for persistent production data.
 
-- Set a strong `SECRET_KEY` in Cloud Run (never commit it). Use `DATABASE_URL` for PostgreSQL when you outgrow ephemeral SQLite.
-- Replace prototype chat scoring with your validated RAG + model JSON (`confidence` / `can_answer`) when you add the OpenAI SDK.
+3. **Gemini free-tier quota limits.** The free tier allows ~1,500 requests/day. Under heavy load the chatbot falls back silently to the heuristic scorer. Check Cloud Run logs for `429 RESOURCE_EXHAUSTED` if answers look generic (`"source": "heuristic"` in API response).
+
+4. **No server-side session expiry.** Auth state lives in `localStorage`. Logging out on one device does not invalidate other sessions.
+
+5. **Knowledge base is English-only.** The KB content is in English. Gemini is instructed to respond in the user's language, but Urdu-language questions may get weaker matches against English KB content.
